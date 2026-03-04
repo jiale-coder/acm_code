@@ -3,7 +3,7 @@
 1. python的enumerate可以在遍历可迭代对象的同时返回索引下标
     ```python
     arr = [1, 4, 2, 5]
-    for idx, val in arr:
+    for idx, val in enumerate(arr):
         print(f"idx: {idx}, val: {val}")
         # 0, 1
         # 1, 4
