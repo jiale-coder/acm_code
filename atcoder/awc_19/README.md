@@ -4,12 +4,12 @@
 1. 贪心相邻交换论证：对于一种堆叠序列从上往下考虑, 假设上面堆的重量综合为 $tot$，下两个要堆的分别是 $i, j$:
     - $i$ 要放 $j$ 的上面则：
 
-        $tot\leq D_i$，$D_j\ge W_i + tot$
+        $tot\leq D_i$， $D_j\ge W_i + tot$
 
         即 $tot\leq \min(D_i, D_j - Wi)$
     - $j$ 要放 $i$ 的上面则：
 
-        $tot\leq D_j$，$D_i\ge W_j + tot$
+        $tot\leq D_j$， $D_i\ge W_j + tot$
 
         即 $tot\leq \min(D_j, D_i - W_j)$
     
