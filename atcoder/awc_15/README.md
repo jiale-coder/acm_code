@@ -131,4 +131,18 @@
   
   students.sort(key=cmp)
 
+
+  # cmp_to_key
+  from functools import cmp_to_key
+  arr = [(1, "gg"), (3, "1sxx"), (3, "s233")]
+  # 必须返回int, < 0 表示 a 应该排 b 前面
+  def cmp(a, b):
+    if a[0] != b[0]:
+      return a[0] - b[0]
+    if a[1] < b[1]:
+      return 1
+    elif a[1] == b[1]:
+      return 0
+    return -1
+  arr.sort(key=cmp_to_key(cmp))
  ```
