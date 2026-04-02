@@ -2296,6 +2296,51 @@ struct HJT_tree {
         else return query(tr[u].l, tr[v].l, l, mid, k - sz) + tr[tr[u].r].sum - tr[tr[v].r].sum;
     }
 };
+
+// 指针版本
+struct HjtTree {
+  struct Node {
+    Node* left{nullptr};
+    Node* right{nullptr};
+    int cnt{0};
+  };
+  Node* dummy_;
+  std::vector<Node*> root_;
+  HjtTree(int n) {
+    dummy_ = new Node();
+    dummy_->left = dummy_;
+    dummy_->right = dummy_;
+    root_.assign(n, dummy_);
+  }
+
+  void insert(Node*& u, Node* v, int l, int r, int x) {
+    u = new Node();
+    *u = *v;
+    u->cnt++;
+    if (l == r) {
+      return;
+    }
+    int mid = (l + r) >> 1;
+    if (x <= mid) {
+      insert(u->left, v->left, l, mid, x);
+    } else {
+      insert(u->right, v->right, mid + 1, r, x);
+    }
+  }
+
+  int query(Node* u, Node* v, int l, int r, int k) {
+    if (l == r) {
+      return l;
+    }
+    int mid = (l + r) >> 1;
+    int sum = u->left->cnt - v->left->cnt;
+    if (sum >= k) {
+      return query(u->left, v->left, l, mid, k);
+    } else {
+      return query(u->right, v->right, mid + 1, r, k - sum);
+    }
+  }
+};
 ```
 
 
