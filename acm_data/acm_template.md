@@ -4215,8 +4215,231 @@ void tarjan(int u, int fa) {
     }
 }
 ```
+---
 
 
+### 网络流
+#### 基本概念
+##### 流网络
+由一些点和有向边组成的可以有环的图，记作 $G=(V,E)$，其中 $V$ 是点集，$E$ 是边集。
+定义 $n=|V|,m=|E|$，在本篇文章中使用。
+
+##### 源点
+在一个流网络中，入度为 $0$ 且能流出的流量为 $\infty$ 的点。一般用斜体大写字母 $S$ 表示。
+
+##### 汇点
+在一个流网络中，出度为 $0$ 且能流入的流量为 $\infty$ 的点。一般用斜体大写字母 $T$ 表示。
+
+##### 容量
+流网络里的每一条边都有一个属性，称为该边的容量，一般用 $c(u,v)$ 表示。
+$$\{u\in V,v\in V,(u,v)\in E\}$$
+
+**注意:**
+1. 在讨论流网络时为了简化讨论，默认不存在反向边。
+2. 如果有一条边不存在，我们就定义它的容量为 $0$。
+
+---
+
+#### 可行流与最大流
+##### 可行流
+对于任意满足以下两个条件的流，被称为可行流，用字母 $f$ 表示。$|f|$ 表示该可行流的流量。
+
+1. **容量限制**
+每条边流过的流量不能超过这条边的容量。
+$$0<f(u,v)\le c(u,v) \quad \{u\in V,v\in V,(u,v)\in E\}$$
+
+2. **流量守恒**
+对于流网络中除源点和汇点外的每个点，流入流量与流出流量相等。
+$$\forall x\in V/\{S,T\},\ \sum_{(u,x)\in E}f(u,x)=\sum_{(x,v)\in E}f(x,v)$$
+
+##### 最大流
+流网络中流量值最大的一个可行流，被称为该流网络的最大可行流，简称为最大流。
+本文示例最大流的值为 $9$。
+
+---
+
+#### 残量网络
+对于任意一个流网络 $G$ 中的任意一个可行流 $f$，都能对应一个残量网络，记作 $G_f$。
+
+##### 残量网络构造
+- 点集: $V_f=V$
+- 边集: $E_f=E\cup\{(v,u)\mid \forall (u,v)\in E\}$
+- 容量:
+
+$$c'(u,v)=c(u,v)-f(u,v) \quad (u,v)\in E$$
+
+$$c'(v,u)=f(u,v) \quad (v,u)\in E$$
+
+##### 可行流叠加性质
+原网络 $G$ 的可行流 $f$ 与残量网络 $G_f$ 的可行流 $f'$ 满足:
+1. $f+f'$ 也是 $G$ 的一个可行流
+2. $|f+f'|=|f|+|f'|$
+
+**推论:**
+如果残量网络中存在任意一个流量 $>0$ 的可行流，那么原网络的可行流一定不是最大流。
+
+---
+
+#### 增广路径
+在残量网络中从源点 $S$ 出发，沿着容量 $>0$ 的边，能够走到汇点 $T$ 的简单无环路径，被称为增广路径。
+
+---
+
+#### 最小割相关概念
+##### 割
+对于流网络 $G=(V,E)$，将点集 $V$ 分成两个子集 $S,T$，满足:
+$$S\cup T=V,\ S\cap T=\emptyset,\ S\in S,\ T\in T$$
+该划分方案称为**割**。
+
+##### 割的容量
+所有从 $S$ 指向 $T$ 的边的容量之和:
+$$c(S,T)=\sum_{u\in S}\sum_{v\in T}c(u,v)$$
+
+##### 最小割
+所有割中，割容量最小的方案，称为最小割。
+$n$ 个点的流网络共有 $2^{n-2}$ 种合法割。
+
+##### 割的流量
+$$f(S,T)=\sum_{u\in S}\sum_{v\in T}f(u,v)-\sum_{u\in T}\sum_{v\in S}f(u,v)$$
+
+##### 割的五大性质
+1. $\forall [S,T],\forall f,\ f(S,T)\le c(S,T)$
+2. $\forall [S,T],\forall f,\ f(S,T)=|f|$
+3. $f(X,Y)=-f(Y,X)$
+4. $f(Z,X\cup Y)=f(Z,X)+f(Z,Y)$
+5. $f(X,X)=0$
+
+**核心推论:**
+$$|f|\le c(S,T) \implies \boldsymbol{最大流 \le 最小割}$$
+
+---
+
+#### 最大流最小割定理
+可行流 $f$ 是最大流
+$\iff$ 残量网络中不存在增广路
+$\iff$ 存在割 $[S,T]$，使得 $|f|=c(S,T)$
+
+##### 证明
+1. **$1 \Rightarrow 2$**
+反证: 若存在增广路，则残量网络有额外流量 $f'$， $|f+f'|>|f|$，与最大流矛盾。
+
+2. **$2 \Rightarrow 3$**
+构造割: 集合 $S$ 为残量网络中从 $S$ 出发、沿容量 $>0$ 的边可达的所有点（无增广路故 $S$ 不含 $T$）， $T=V-S$。
+
+正向边 $(u\in S,v\in T)$: $f(u,v)=c(u,v)$
+反向边 $(u\in T,v\in S)$: $f(u,v)=0$
+
+因此: $$|f|=f(S,T)=\sum_{u\in S}\sum_{v\in T}c(u,v)=c(S,T)$$
+
+3. **$3 \Rightarrow 1$**
+由 $|f|\le c(S,T)$ 且 $|f|=c(S,T)$，可得:
+$$最大流 = 最小割$$
+
+---
+
+#### 费用流相关概念
+##### 费用定义
+每条边 $(u,v)$ 拥有流量 $f(u,v)$ 与单位费用 $w(u,v)$，总费用:
+$$\text{总费用} = \sum f(u,v)\times w(u,v)$$
+
+##### 两类费用流
+- 最大费用最大流: 最大流前提下费用最大
+- 最小费用最大流: 最大流前提下费用最小
+
+---
+
+
+#### 最大流模板(Dinic)
+
+```c++
+template<class T>
+struct MaxFlow {
+	struct Edge {
+		int to;
+		T cap;
+		Edge(int to, T cap) : to(to), cap(cap) {}
+	};
+
+	int n;
+	std::vector<Edge> e;
+	std::vector<std::vector<int>> g;
+	std::vector<int> cur, h;
+
+	MaxFlow() {}
+	MaxFlow(int n) {
+		init(n);
+	}
+
+	void init(int n) {
+		this->n = n;
+		e.clear();
+		g.assign(n, {});
+		cur.resize(n);
+		h.resize(n);
+	}
+
+	bool bfs(int s, int t) {
+		h.assign(n, -1);
+		h[s] = 0;
+		std::queue<int> que;
+		que.push(s);
+		while (!que.empty()) {
+			const int u = que.front();
+			que.pop();
+			for (int i : g[u]) {
+				auto [v, c] = e[i];
+				if (c > 0 && h[v] == -1) {
+					h[v] = h[u] + 1;
+					if (v == t) {
+						return true;
+					}
+					que.push(v);
+				}
+			}
+		}
+		return false;
+	}
+
+	T dfs(int u, int t, T f) {
+		if (u == t) {
+			return f;
+		}
+		auto r = f;
+		for (int& i = cur[u]; i < int(g[u].size()); i++) {
+			const int j = g[u][i];
+			auto [v, c] = e[j];
+			if (c > 0 && h[v] == h[u] + 1) {
+				auto a = dfs(v, t, std::min(r, c));
+				e[j].cap -= a;
+				e[j ^ 1].cap += a;
+				r -= a;
+				if (r == 0) {
+					return f;
+				}
+			}
+		}
+		return f - r;
+	}
+
+	void addEdge(int u, int v, T c) {
+		g[u].push_back(e.size());
+		e.emplace_back(v, c);
+		g[v].push_back(e.size());
+		e.emplace_back(u, 0);
+	}
+
+	T flow(int s, int t) {
+		T ans = 0;
+		while (bfs(s, t)) {
+			cur.assign(n, 0);
+			ans += dfs(s, t, std::numeric_limits<T>::max());
+		}
+		return ans;
+	}
+
+};
+
+```
 
 ---
 
