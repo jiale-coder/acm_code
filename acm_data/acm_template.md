@@ -249,7 +249,7 @@ LL get_inv(LL a, LL b) {
 
 若 $\gcd(a,m)=1$，则 $a^{\phi(m)}\equiv1\ (mod\ m)$。
 
-推论：若 $\gcd(a,m)=1$，则 $a^b\equiv a^{\phi(m)}\mod m$。
+推论：若 $\gcd(a,m)=1$，则 $a^b\equiv a^{b\mod \phi(m)}\mod m$。
 
 #### 阶
 
